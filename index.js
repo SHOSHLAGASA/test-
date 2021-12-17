@@ -8,7 +8,7 @@ import { capitalize } from "lodash";
 import dotenv from "dotenv";
 dotenv.config();
 
-const router = new Navigo("/");
+const router = new Navigo(window.location.origin);
 
 function render(st) {
   document.querySelector("#root").innerHTML = `
