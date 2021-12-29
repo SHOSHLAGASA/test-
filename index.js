@@ -35,25 +35,44 @@ function addEventListeners(st) {
     .addEventListener("click", () =>
       document.querySelector("nav > ul").classList.toggle("hidden--mobile")
     );
+}
 
-  // event listener for the the photo form
-  if (st.view === "Register") {
-    document.querySelector("form").addEventListener("submit", event => {
-      event.preventDefault();
-      // convert HTML elements to Array
-      let inputList = Array.from(event.target.elements);
-      // remove submit button from list
-      inputList.pop();
-      // construct new picture object
-      let newPic = inputList.reduce((pictureObject, input) => {
-        pictureObject[input.name] = input.value;
-        return pictureObject;
-      }, {});
-      // add new picture to state.Gallery.pictures
-      state.Gallery.pictures.push(newPic);
-      render(state.Gallery);
-    });
-  }
+if (st.view === "Order") {
+  document.querySelector("form").addEventListener("submit", event => {
+    event.preventDefault();
+
+    const inputList = event.target.elements;
+    console.log("Input Element List", inputList);
+
+    const toppings = [];
+    // Interate over the toppings input group elements
+    for (let input of inputList.toppings) {
+      // If the value of the checked attribute is true then add the value to the toppings array
+      if (input.checked) {
+        toppings.push(input.value);
+      }
+    }
+
+    const requestData = {
+      customer: inputList.customer.value,
+      crust: inputList.crust.value,
+      cheese: inputList.cheese.value,
+      sauce: inputList.sauce.value,
+      toppings: toppings
+    };
+    console.log("request Body", requestData);
+
+    axios
+      .post(`${process.env.PIZZA_PLACE_API_URL}`, requestData)
+      .then(response => {
+        // Push the new pizza onto the Pizza state pizzas attribute, so it can be displayed in the pizza list
+        state.Pizza.pizzas.push(response.data);
+        router.navigate("/Pizza");
+      })
+      .catch(error => {
+        console.log("It puked", error);
+      });
+  });
 }
 
 // pizza
